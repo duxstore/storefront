@@ -16,6 +16,9 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ],
+    script: [
+      { src: 'https://js.stripe.com/v3' }
     ]
   },
 
@@ -25,7 +28,22 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    {
+      src: '~/plugins/money.js'
+    },
+    {
+      src: '~/plugins/vue-slider.js',
+      ssr: false
+    },
+    '~/plugins/vue-api-query.js',
+    {
+      src: '~/plugins/stripe-elements.client.js',
+      mode: 'client',
+      ssr: false
+    }
   ],
+
+  router: {},
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -35,22 +53,36 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/tailwindcss
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxt/image',
+    '@nuxtjs/router-extras'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
+
+  env: {
+    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/'
+    baseURL: process.env.API_URL,
+    credentials: true
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  image: {
+    cloudinary: {
+      baseURL: 'https://res.cloudinary.com/tmp/image/upload/v1647652479/commerce/'
+    }
   }
 }
