@@ -15,7 +15,12 @@ module.exports = {
         'secondary-color': theme.textSecondaryColor
       },
       fontFamily: {
-        sans: ['Roboto', ...defaultTheme.fontFamily.sans]
+        sans: ['Roboto', ...defaultTheme.fontFamily.sans],
+        header: 'Montserrat sans-serif',
+        body: 'Roboto Slab serif'
+      },
+      fontSize: {
+        md: '1rem'
       }
     }
   },

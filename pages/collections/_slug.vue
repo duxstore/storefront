@@ -38,10 +38,6 @@
           </slide>
         </carousel>
       </section>
-
-      <section v-if="$fetchState.pending" class="mb-10 sm:my-40 animate-pulse">
-        <ProductItem class="w-full overflow-hidden mb-10 mr-2" :product="[]" :show-description="true" />
-      </section>
     </div>
   </div>
 </template>

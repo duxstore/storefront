@@ -1,15 +1,15 @@
 <template>
   <div>
     <!-- Secondary Menu -->
-    <div class="bg-secondary-color flex flex-row h-11 justify-between row">
-      <ul class="flex flex-row font-medium gap-5 items-center text-black text-sm">
+    <div class="hidden bg-secondary-color flex flex-row h-11 justify-between row">
+      <ul class="hidden flex flex-row font-medium gap-5 items-center text-black text-sm">
         <li>
           <nuxt-link to="">
             About
           </nuxt-link>
         </li>
       </ul>
-      <ul class="flex flex-row font-medium gap-5 items-center text-black text-sm">
+      <ul class="hidden flex flex-row font-medium gap-5 items-center text-black text-sm">
         <li>
           <nuxt-link to="">
             Sign in
@@ -34,7 +34,7 @@
       <!-- Collection Links -->
       <ul class="menu flex flex-row justify-between w-4/12">
         <li v-for="nav in menus" :key="nav.id">
-          <nuxt-link :to="`/collections/${nav.shortname}`" class="hover:text-secondary-color">
+          <nuxt-link :to="{name: 'single-collection', params: {slug: nav.shortname}}" class="hover:text-secondary-color">
             {{ nav.name }}
           </nuxt-link>
         </li>
@@ -55,7 +55,7 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <span class="font-medium">0</span>
+              <span class="font-medium">{{ cartCount }}</span>
             </button>
           </li>
         </ul>
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import CollectionService from '~/services/Collections'
 export default {
   name: 'NavBar',
@@ -73,6 +73,11 @@ export default {
     return {
       menus: []
     }
+  },
+  computed: {
+    ...mapGetters('cart', [
+      'cartCount'
+    ])
   },
   mounted () {
     this.collections()

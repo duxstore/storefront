@@ -5,19 +5,6 @@
         Checkout
       </h4>
       <form @submit.prevent="pay">
-        <div class="w-3/5 md:w-9/12 mx-auto">
-          <div class="card-type flex justify-between items-center my-5 ">
-            <!-- <div class="visa-card">
-              <img src="~/assets/visa-classic.svg" alt="">
-            </div>
-            <div class="visa-card">
-              <img src="~/assets/mastercard.png" alt="">
-            </div>
-            <div class="visa-card">
-              <img src="~/assets/paypal.svg" alt="">
-            </div> -->
-          </div>
-        </div>
         <div class="mb-4 flex flex-col">
           <label for="Cardholder Name" class="text-charcoal-light-text text-xs font-semibold">Cardholder Name</label>
           <input id="Cardholder Name" v-model="cardHolderName" type="text" placeholder="Cardholder Name" class="text-dark-800 focus:ring-2 border-input border  outline-none px-4 rounded text-sm bg-secondary-color-ash py-3">
@@ -38,24 +25,24 @@
         </div>
 
         <div class="flex flex-col mb-4">
-          <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">Residential country</label>
-          <input v-model="residential_country" label="Country" type="text" placeholder="Enter your country here" class="text-dark-800 focus:ring-2 border-input border outline-none px-4 rounded text-sm bg-secondary-color-ash py-3">
+          <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">Billing country</label>
+          <input v-model="billing_country" label="Country" type="text" placeholder="Enter your country here" class="text-dark-800 focus:ring-2 border-input border outline-none px-4 rounded text-sm bg-secondary-color-ash py-3">
         </div>
 
         <div class="flex flex-col mb-4">
-          <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">Residential address</label>
-          <input v-model="residential_address" placeholder="Residential Address" type="text" class="text-dark-800 focus:ring-2 border-input border outline-none px-4 rounded text-sm bg-secondary-color-ash py-3">
+          <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">Billing address</label>
+          <input v-model="billing_address" placeholder="Billing Address" type="text" class="text-dark-800 focus:ring-2 border-input border outline-none px-4 rounded text-sm bg-secondary-color-ash py-3">
         </div>
 
         <div class="flex flex-col mb-4">
           <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">State/Province</label>
-          <input v-model="residential_state" placeholder="State/Province" class="text-dark-800 focus:ring-2 border-input border  outline-none px-4 rounded text-sm bg-secondary-color-ash py-3" type="text">
+          <input v-model="billing_state" placeholder="State/Province" class="text-dark-800 focus:ring-2 border-input border  outline-none px-4 rounded text-sm bg-secondary-color-ash py-3" type="text">
         </div>
 
         <div class="flex flex-col mb-4">
           <label for="card-number" class="text-charcoal-light-text text-xs font-semibold">Postal code</label>
           <input
-            v-model="residential_postal_code"
+            v-model="billing_postal_code"
             placeholder="Postal Code"
             type="text"
             class="text-dark-800 focus:ring-2 border-input border  outline-none px-4 rounded text-sm bg-secondary-color-ash py-3"
@@ -63,7 +50,6 @@
         </div>
 
         <div class="flex flex-col align-center">
-          <!-- Will need a UI to show saved cards -->
           <div class="flex flex-row items-center mb-1 w-full">
             <input id="remember_me" v-model="storeCard" type="checkbox" class="mr-2">
             <label class="text-charcoal-light-text text-xs font-medium" for="remember_me">Save my details for future purchases</label>
@@ -93,17 +79,16 @@ export default {
   name: 'CheckoutPage',
   data () {
     return {
-      residential_address: '',
-      residential_state: '',
-      residential_country: '',
-      residential_postal_code: '',
+      billing_address: '',
+      billing_state: '',
+      billing_country: '',
+      billing_postal_code: '',
       cardHolderName: null,
       storeCard: false,
       cardNumber: null,
       cardExpiry: null,
       cardCvc: null,
-      intent: null,
-      busy: false
+      intent: null
     }
   },
   computed: {
@@ -111,13 +96,13 @@ export default {
       return this.$stripe.elements()
     },
     cartTotal () {
-      const naira = new Intl.NumberFormat('en-US', {
+      const money = new Intl.NumberFormat('en-NG', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'NGN',
         minimumFractionDigits: 2
       })
 
-      return naira.format(240000)
+      return money.format(240000)
     }
   },
   mounted () {
@@ -153,49 +138,36 @@ export default {
     async pay () {
       this.busy = true
       this.intent = await this.$axios.get('/checkout/intent')
-      // eslint-disable-next-line no-console
-      console.log('Intent data ', this.intent)
       this.intent = this.intent.data
 
       const address = {
-        address: this.residential_address,
-        state: this.residential_state,
-        country: this.residential_country,
-        postal: this.residential_postal_code
+        address: this.billing_address,
+        state: this.billing_state,
+        country: this.billing_country,
+        postal: this.billing_postal_code
       }
 
       this.$stripe.confirmCardSetup(this.intent.client_secret,
         {
           payment_method: {
-            card: this.cardNumber,
-            // We will have to create a billing address for users to use here.
-            billing_details: Object.assign({}, { name: this.cardHolderName }, address)
+            card: this.cardNumber
           }
         }
-      ).then((result) => {
-        // eslint-disable-next-line no-console
-        console.log('Payment result ', result)
+      ).then(async (result) => {
         const paymentMethod = result.setupIntent.payment_method
-        // retrieve information for the API from payment_intent
-        this.$store.dispatch('buy/pay', [this.cardHolderName, paymentMethod, this.storeCard]).then((res) => {
-          this.busy = false
-          // Upon successful payment we will begin a queued job to created the zipped
-          // folder containing the purchased items and email that to the user (on the backend)
-          this.$toast.success('Your payment was successful, and your download link has been sent to your email.')
-          // Reset the cart
-          this.$store.commit('buy/setCart', [])
-          this.$store.commit('buy/setCartTotal', 0)
-          setTimeout(() => {
-            this.$router.push('/')
-            this.$toast.clear()
-          }, 2000)
-        }).catch((err) => {
-          this.busy = false
-          this.$toast.error(err)
+
+        await this.$axios.post('/checkout/pay', {
+          name: this.cardHolderName,
+          payment_method: paymentMethod,
+          billing_address: address,
+          amount: this.cartTotal
+        }).then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('Payment was successful ', result)
         })
       }).catch((err) => {
-        this.busy = false
-        this.$toast.error(err)
+        // eslint-disable-next-line no-console
+        console.log('An error occurred ', err)
       })
     }
   }

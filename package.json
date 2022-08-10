@@ -17,6 +17,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@vue-stripe/vue-stripe": "^4.4.2",
     "core-js": "^3.19.3",
+    "lodash": "^4.17.21",
     "nuxt": "^2.15.8",
     "tldts": "^5.7.75",
     "vue": "^2.6.14",

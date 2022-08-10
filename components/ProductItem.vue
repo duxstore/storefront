@@ -20,7 +20,7 @@
     <div v-if="showMeta" class="mb-4">
       <span data-price class="text-primary-color text-base mb-2">{{ product.price | money }} - {{ 57200 | money }}</span>
       <p v-if="showDescription" class="text-sm font-normal text-inherit whitespace-pre-wrap leading-6">{{ product.description }}</p>
-      <product-variation :show-color-only="showColorVariation" :hide-titles="true" :product="product" class="mt-2 flex flex-row justify-items-auto gap-4" />
+      <ProductVariation :show-color-only="showColorVariation" :hide-titles="true" :product="product" :show-label="true" />
     </div>
     <nuxt-link v-if="showMeta" :to="{name: 'single-product', params: {slug: product.shortname}}" class="hover:text-secondary-color text-primary-color font-medium border-b-4 border-primary-color">
       Shop now
