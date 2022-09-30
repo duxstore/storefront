@@ -1,8 +1,8 @@
 <template>
-  <div class="row my-40">
+  <div class="row my-10">
     <!-- <h2>Home</h2> -->
     <!-- Little teaser -->
-    <div class="flex flex-row gap-40 justify-center items-center">
+    <!-- <div class="flex flex-row gap-40 justify-center items-center">
       <div v-for="teaser in 3" :key="teaser" class="flex flex-row gap-2 items-center justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -23,116 +23,29 @@
           </p>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <!-- Catalog items: A header text and 4 catalog items -->
-    <section class="my-10 sm:my-40">
-      <h2 class="text-center text-2xl font-bold">
-        Every Corner of Your House
-      </h2>
-      <div>
-        <CatalogItem />
-      </div>
+    <!--Collections-->
+    <section class="my-3 sm:my-5">
+      <CollectionList />
     </section>
 
     <!-- Slider 1: (e.g most viewed recently) Featured products on the landing page -->
-    <section class="my-10 sm:my-40">
-      <h2 class="text-center text-2xl font-bold mb-5 xl:mb-20">
-        New Stock Alert
-      </h2>
-      <carousel
-        :per-page-custom="[[768, 2], [1024, 3], [1536, 4]]"
-        :touch-drag="false"
-        :navigation-enabled="true"
-        :pagination-enabled="false"
-        :navigation-next-label="rightCaret"
-        :navigation-prev-label="leftCaret"
-        :mouse-drag="false"
-      >
-        <slide v-for="item in 12" :key="item">
-          <ProductItem class="w-full overflow-hidden mb-10 mr-2" :product="product" :show-description="true" />
-        </slide>
-      </carousel>
-    </section>
-
-    <!-- Featured Category 1 -->
-    <section class="mx-auto">
-      <div class="grid grid-cols-12 gap-x-6 gap-y-6 items-start">
-        <div class="2xl:col-span-5 2xl:col-start-7 col-span-12 items-center max-w-full xl:col-span-6 xl:order-last">
-          <div class="h-full px-7 xl:px-9 lg:px-12 pt-10 py-6 xl:pt-7 lg:pt-10 xl:py-2 2xl:px-12 flex flex-col space-y-md xl:space-y-6 lg:space-y-7 2xl:space-y-6 justify-center max-w-full text-white bg-primary-color">
-            <div class="flex flex-col items-start space-y-4 md:space-y-3">
-              <h2 class="text-xl md:text-2xl tracking-normal md:tracking-normal font-serif font-bold text-inherit my-0 md:text-h3 lg:text-2xl">
-                Household Faves
-              </h2>
-              <p class="">
-                The Paddington Bed Base is a beauty. Made from recycled polyester including plastic bottles and sourced from sustainable timber, put your head back and rest comfortably knowing that you’ve made the right choice for you and the environment.
-              </p>
-              <nuxt-link to="/" class="inline-block hover:text-secondary-color mb-4 text-white font-medium border-b-4 border-secondary-color">
-                Buy this collection
-              </nuxt-link>
-            </div>
-            <img src="https://images.ctfassets.net/uvwd10ivtduz/6xROkM3MgHXs5kFRtJwRUz/3289bbe5dd6898acc3c6654bedd5091c/T00461_AU_Paddington_bedbaseQueenAU_Queen_Eucalyptus_17101.jpg??w=828&h=466&q=75&fit=fill&fm=webp" />
-          </div>
-        </div>
-        <div class="2xl:col-start-2 col-span-12 xl:col-span-6 2xl:col-span-5 max-w-full h-full">
-          <div class="h-full grid grid-cols-2 gap-x-6 gap-y-6 items-center">
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-          </div>
-        </div>
+    <section class="my-10 sm:my-32">
+      <div class="flex flex-row justify-between">
+        <h2 class="font-body mb-5 text-2xl text-left">
+          Latest products
+        </h2>
+        <nuxt-link class="hover:underline text-black" :to="{ name: 'products' }">
+          view all
+        </nuxt-link>
       </div>
+      <ProductList :limit="15" />
     </section>
 
-    <!-- Slider 2: (e.g most bought) Featured products 2 on the landing page -->
-    <section class="my-10 sm:my-40">
-      <h2 class="text-center text-2xl font-bold mb-5 xl:mb-20">
-        New Stock Alert
-      </h2>
-      <carousel
-        :per-page-custom="[[768, 2], [1024, 3], [1536, 4]]"
-        :touch-drag="false"
-        :navigation-enabled="true"
-        :pagination-enabled="false"
-        :navigation-next-label="rightCaret"
-        :navigation-prev-label="leftCaret"
-        :mouse-drag="false"
-      >
-        <slide v-for="item in 12" :key="item">
-          <ProductItem class="w-full overflow-hidden mb-10 mr-2" :product="product" :show-description="true" />
-        </slide>
-      </carousel>
-    </section>
-
-    <!-- Featured Category 2 -->
-    <section class="mx-auto">
-      <div class="grid grid-cols-12 gap-x-6 gap-y-6 items-start">
-        <div class="2xl:col-span-5 2xl:col-start-7 col-span-12 items-center max-w-full xl:col-span-6 xl:order-last">
-          <div class="h-full px-7 xl:px-9 lg:px-12 pt-10 py-6 xl:pt-7 lg:pt-10 xl:py-2 2xl:px-12 flex flex-col space-y-md xl:space-y-6 lg:space-y-7 2xl:space-y-6 justify-center max-w-full text-white bg-primary-color">
-            <div class="flex flex-col items-start space-y-4 md:space-y-3">
-              <h2 class="text-xl md:text-2xl tracking-normal md:tracking-normal font-serif font-bold text-inherit my-0 md:text-h3 lg:text-2xl">
-                Household Faves
-              </h2>
-              <p class="">
-                The Paddington Bed Base is a beauty. Made from recycled polyester including plastic bottles and sourced from sustainable timber, put your head back and rest comfortably knowing that you’ve made the right choice for you and the environment.
-              </p>
-              <nuxt-link to="/" class="inline-block hover:text-secondary-color mb-4 text-white font-medium border-b-4 border-secondary-color">
-                Buy this collection
-              </nuxt-link>
-            </div>
-            <img src="https://images.ctfassets.net/uvwd10ivtduz/6xROkM3MgHXs5kFRtJwRUz/3289bbe5dd6898acc3c6654bedd5091c/T00461_AU_Paddington_bedbaseQueenAU_Queen_Eucalyptus_17101.jpg??w=828&h=466&q=75&fit=fill&fm=webp" />
-          </div>
-        </div>
-        <div class="2xl:col-start-2 col-span-12 xl:col-span-6 2xl:col-span-5 max-w-full h-full">
-          <div class="h-full grid grid-cols-2 gap-x-6 gap-y-6 items-center">
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-            <ProductItem :show-meta="false" image-width="360" image-height="390" :product="product" class="" />
-          </div>
-        </div>
-      </div>
+    <!--Collections-->
+    <section class="my-3 sm:my-5">
+      <CollectionList />
     </section>
   </div>
 </template>
@@ -319,7 +232,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+    .VueCarousel-navigation-button
+  {
+    border: 2px solid !important;
+    @apply block border-2 border-primary-color cursor-pointer h-10 opacity-100 rounded-full w-10;
+  }
+
   .VueCarousel-slide
   {
     @apply px-5
@@ -328,12 +247,6 @@ export default {
   .VueCarousel-navigation
   {
     @apply -top-20 absolute right-10;
-  }
-
-  .VueCarousel-navigation-button
-  {
-    border: 2px solid !important;
-    @apply block border-2 border-primary-color cursor-pointer h-10 opacity-100 rounded-full w-10;
   }
 
   .VueCarousel-navigation-prev

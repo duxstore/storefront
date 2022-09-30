@@ -1,44 +1,6 @@
 <template>
   <div class="row">
-    <div v-if="type === 'simple'">
-      <ProductList />
-    </div>
-
-    <div v-if="type === 'slides'">
-      <!-- Slider 2: (e.g most bought) Featured products 2 on the landing page -->
-      <section v-if="!$fetchState.pending" class="mb-10 sm:my-40">
-        <carousel
-          :per-page-custom="[[768, 2], [1024, 3], [1536, 4]]"
-          :touch-drag="false"
-          :navigation-enabled="true"
-          :pagination-enabled="false"
-          :navigation-next-label="rightCaret"
-          :navigation-prev-label="leftCaret"
-          :mouse-drag="false"
-        >
-          <slide v-for="product in products" :key="product.id">
-            <ProductItem class="w-full overflow-hidden mb-10 mr-2" :product="product" :show-description="true" />
-          </slide>
-        </carousel>
-      </section>
-
-      <!-- Slider 2: (e.g most bought) Featured products 2 on the landing page -->
-      <section v-if="!$fetchState.pending" class="mb-10 sm:my-40">
-        <carousel
-          :per-page-custom="[[768, 2], [1024, 3], [1536, 4]]"
-          :touch-drag="false"
-          :navigation-enabled="true"
-          :pagination-enabled="false"
-          :navigation-next-label="rightCaret"
-          :navigation-prev-label="leftCaret"
-          :mouse-drag="false"
-        >
-          <slide v-for="product in products" :key="product.id">
-            <ProductItem class="w-full overflow-hidden mb-10 mr-2" :product="product" :show-description="true" />
-          </slide>
-        </carousel>
-      </section>
-    </div>
+    <ProductList :items="products" />
   </div>
 </template>
 
@@ -55,7 +17,10 @@ export default {
     }
   },
   async fetch () {
-    this.products = await CollectionService.products(this.collection)
+    const response = await CollectionService.products(this.collection)
+    this.products = response.products
+    // eslint-disable-next-line no-console
+    console.log('Requtrned products ', response, this.products)
   },
   computed: {
     collection () {
@@ -78,7 +43,7 @@ export default {
 <router>
 {
   name: 'single-collection',
-  path: '/collection/:slug'
+  path: '/collections/:slug'
 }
 </router>
 

@@ -1,6 +1,7 @@
 import Products from '~/models/Products'
 
-const CollectionService = {
+const ProductService = {
+
   async index (query) {
     return await Products.params(query).get()
   },
@@ -10,4 +11,4 @@ const CollectionService = {
   }
 }
 
-export default CollectionService
+export default ProductService

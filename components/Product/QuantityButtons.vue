@@ -4,7 +4,8 @@
       <button
         :class="size === 'sm' ? 'p-1' : 'p-2'"
         class="border-2 border-secondary-color hover:bg-opacity-5 hover:bg-primary-color rounded-full"
-        @click="decrement">
+        @click="decrement"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="block h-5 text-primary-color w-5"
@@ -16,12 +17,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
         </svg>
       </button>
-      <span>{{ 'count ' + count }}</span>
-      <span>{{ 'value ' + value }}</span>
+      <span>{{ count }}</span>
       <button
         :class="size === 'sm' ? 'p-1' : 'p-2'"
         class="border-2 border-secondary-color hover:bg-opacity-5 hover:bg-primary-color rounded-full"
-        @click="increment">
+        @click="increment"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="block h-5 text-primary-color w-5"
@@ -50,6 +51,10 @@ export default {
       default: 10,
       required: false
     },
+    /**
+     * Value will be the starting point for
+     * in/de-crementing if supplied
+     */
     value: {
       type: Number,
       default: 0,
@@ -61,15 +66,19 @@ export default {
       count: 0
     }
   },
+  mounted () {
+    this.setDefaultCount()
+  },
   methods: {
     increment () {
-      if (this.quantity === this.max) {
+      if (this.count === this.max) {
         return
       }
+
       this.count++
 
-      this.$emit('increment', this.count)
-      this.$emit('value', this.value)
+      // this.$emit('increment', this.count)
+      this.$emit('quantity', this.count)
     },
     decrement () {
       if (this.count <= 1) {
@@ -77,8 +86,13 @@ export default {
       }
       this.count--
 
-      this.$emit('decrement', this.count)
-      this.$emit('value', this.value)
+      this.$emit('quantity', this.count)
+      // this.$emit('value', this.value)
+    },
+    setDefaultCount () {
+      if (this.value > 0) {
+        this.count = this.value
+      }
     }
   }
 }

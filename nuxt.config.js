@@ -17,12 +17,9 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.gstatic.com' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Roboto+Slab:wght@300;400;500;600&display=swap' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Roboto+Slab:wght@300;400;500;600&display=swap' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500&family=Roboto+Slab:wght@300;400;500;600&display=swap' }
     ],
-    script: [
-      { src: 'https://js.stripe.com/v3' }
-    ]
+    script: []
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -40,10 +37,17 @@ export default {
     },
     '~/plugins/vue-api-query.js',
     {
-      src: '~/plugins/stripe-elements.client.js',
-      mode: 'client',
-      ssr: false
-    }
+      src: '~/plugins/vuex-persist.js',
+      mode: 'client'
+    },
+    {
+      src: '~/plugins/cart.js',
+      mode: 'client'
+    },
+    {
+      src: '~/plugins/form.js',
+      ssr: true,
+    },
   ],
 
   router: {},

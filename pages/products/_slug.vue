@@ -1,32 +1,33 @@
 <template>
   <div v-if="!$fetchState.pending" class="row">
-    <div class="flex flex-row">
+    <div class="flex flex-col sm:flex-row">
       <div class="w-5/12 max-screen">
         <div class="block max-screen sticky top-0">
           <carousel
             :per-page-custom="[[768, 1], [1024, 1], [1536, 1]]"
             :touch-drag="true"
-            :navigation-enabled="true"
-            :pagination-enabled="false"
+            :navigation-enabled="false"
+            :pagination-enabled="true"
             :navigation-next-label="rightCaret"
             :navigation-prev-label="leftCaret"
-            :mouse-drag="false"
+            :mouse-drag="true"
             :per-page="1"
           >
             <slide v-for="(image, i) in images" :key="i">
-              <NuxtImg
+              <!--<NuxtImg
                 :src="image"
                 provider="cloudinary"
                 width="auto"
-                height="1500 "
+                height="1500"
                 fit="fill"
-              />
+              />-->
+              <img :src="image" alt="">
             </slide>
           </carousel>
         </div>
       </div>
-      <div class="w-7/12 bg-secondary-color px-40 py-20">
-        <h2 class="font-medium my-3 text-4xl text-gray-800">
+      <div class="2xl:px-40 2xl:py-20 bg-secondary-color sm:px-10 sm:py-5 px-5 py-5 w-7/12">
+        <h2 class="font-medium my-3 2xl:text-4xl sm:text-2xl text-xl text-gray-800">
           {{ product.name }}
         </h2>
         <div class="my-3 flex flex-row gap-2">
@@ -70,6 +71,19 @@ export default {
   },
   async fetch () {
     this.product = await ProductService.find(this.shortname)
+    // We need to add this any product instance
+    // before adding it to cart so that calculations can work
+    const price = this.product.price
+    const qty = this.product?.cart_variation?.quantity || 1
+    const discount = this.product.discount || false
+    let discounted = false
+
+    discounted = discount * qty
+
+    const total = price * qty
+
+    Vue.set(this.product, 'total', total)
+    Vue.set(this.product, 'discounted', discounted)
   },
   computed: {
     colorVariationBaseCSS () {
@@ -103,7 +117,8 @@ export default {
     },
     images () {
       if (this.product && this.product.media_library && this.product.media_library.length) {
-        return this.product.media_library.map(image => image.split('/')[8])
+        // return this.product.media_library.map(image => image.split('/')[8])
+        return this.product.media_library
       }
       const images = [
         'ggoyesqw5kseds2avb4s',
@@ -115,8 +130,7 @@ export default {
       return images
     },
     description () {
-      return `That initial fragility was not a unique feature of Airbnb. Almost all startups are fragile initially. And that's one of the biggest things inexperienced founders and investors (and reporters and know-it-alls on forums) get wrong about them. They unconsciously judge larval startups by the standards of established ones. They're like someone looking at a newborn baby and concluding there's no way this tiny creature could ever accomplish anything.
-      `
+      return this.product.description
     }
   },
   methods: {
@@ -144,8 +158,7 @@ export default {
         // If product is not in cart, add it for the first time
         this.product.cart_variation = this.cart_variation
         this.product.cart_variation.quantity = 1
-        // eslint-disable-next-line no-console
-        console.log(this.product.cart_variation.quantity, this.product)
+        this.product.quantity = 1
         this.$store.commit('cart/addToCart', this.product)
       }
     },
@@ -176,3 +189,28 @@ export default {
   path: '/product/:slug'
 }
 </router>
+
+<style>
+  .VueCarousel-navigation-button
+  {
+    border: 2px solid !important;
+    @apply block border-2 border-primary-color cursor-pointer h-10 opacity-100 rounded-full w-10;
+  }
+
+  .VueCarousel-pagination
+  {
+    @apply absolute bg-black bg-opacity-60 bottom-0 flex h-10 items-center justify-center
+  }
+
+  .VueCarousel-pagination button, .VueCarousel-pagination div.VueCarousel-dot-container
+  {
+    @apply py-0 my-0 !important
+  }
+
+  .VueCarousel-navigation-prev
+  {
+    margin-right: 10px !important;
+    left: -10px !important;
+  }
+
+</style>

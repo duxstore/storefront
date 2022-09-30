@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-secondary-color flex justify-between h-10 items-center">
+    <div class="bg-gray-900 text-white flex justify-between h-10 items-center">
       <h2 class="px-5 text-xl">
         Your cart ({{ products.length }})
       </h2>
@@ -59,22 +59,18 @@
                   {{ product.name }}
                 </h2>
               </nuxt-link>
-              <div class="my-2">
+              <div class="flex flex-row items-center justify-between my-2">
+                <ProductQuantityButtons
+                  :max="product.stock"
+                  :value="product.cart_variation.quantity"
+                  class="mt-2"
+                  size="sm"
+                  @quantity="setQuantity($event, product)"
+                />
                 <p v-for="(variation, i) in product.cart_variation" :key="'variation'+i" class="font-medium text-sm capitalize">
-                  {{ i + ': ' + variation }}
+                  <span v-if="i !== 'quantity'">{{ i + ': ' + variation }}</span>
                 </p>
               </div>
-
-              <!-- Start qty buttons -->
-              <!--<ProductQuantityButtons
-                v-model="product.cart_variation.quantity"
-                class="mt-2"
-                size="sm"
-                :max="product.stock"
-                @decrement="decrementQty(product.id)"
-                @increment="incrementQty(product.id)"
-              />-->
-              <!-- End qty buttons -->
             </div>
 
             <!-- Start product RHS: price, discount, delete -->
@@ -93,8 +89,8 @@
               </button>
               <div>
                 <span data-price-list class="flex flex-col gap-1 text-right">
-                  <span data-price class="text-primary-color line-through text-base">{{ product.total | money }}</span>
-                  <span v-if="product.discounted" data-price class="text-red-900 font-semibold text-base">{{ product.discounted | money }}</span>
+                  <span data-price class="text-primary-color line-through text-base">{{ product.total * product.cart_variation.quantity | money }}</span>
+                  <span v-if="product.discounted" data-price class="text-red-900 font-semibold text-base">{{ product.discounted * product.cart_variation.quantity | money }}</span>
                   <span data-price class="text-primary-color text-base">({{ product.discount || product.price | money }}/item)</span>
                 </span>
               </div>
@@ -104,12 +100,14 @@
       </div>
 
       <!-- Checkout button, cart total -->
-      <div class="bg-secondary-color h-1/2 mr-5 p-5 w-4/12">
-        <h2 class="text-xl mt-3 mb-5">Order summary</h2>
+      <div class="bg-gray-100 h-1/2 mr-5 p-5 w-4/12">
+        <h2 class="text-xl mt-3 mb-5">
+          Order summary
+        </h2>
         <div class="flex flex-col py-2 gap-3 border-b-2">
           <div class="flex flex-row justify-between">
-            <span data-price class="text-primary-color font-medium text-sm">Subtotal</span>
-            <span data-price class="text-primary-color font-medium text-sm">{{ subtotal | money }}</span>
+            <span data-price class="text-black font-medium text-sm">Subtotal</span>
+            <span data-price class="text-black font-medium text-sm">{{ subtotal | money }}</span>
           </div>
           <div class="flex flex-row justify-between">
             <span data-price class="text-red-800 font-medium text-sm">Discount</span>
@@ -123,8 +121,12 @@
           </div>-->
         </div>
         <div class="flex flex-row py-3 justify-between">
-          <h2 class="text-lg font-semibold font-sans">Total</h2>
-          <h2 class="text-lg font-semibold font-sans">{{ total | money }}</h2>
+          <h2 class="text-lg font-semibold font-sans">
+            Total
+          </h2>
+          <h2 class="text-lg font-semibold font-sans">
+            {{ total | money }}
+          </h2>
         </div>
         <nuxt-link to="/checkout" class="bg-primary-color w-full p-2 text-center text-base text-white my-10 block">
           Checkout
@@ -136,47 +138,27 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+// import Vue from 'vue'
 export default {
   name: 'CartPage',
+  data () {
+    return {
+      // updated: false
+    }
+  },
   computed: {
     ...mapGetters('cart', {
-      cartProducts: 'products',
       cartCount: 'cartCount'
     }),
-    products () {
-      return this.cartProducts.map((product) => {
-        const price = product.price
-        const qty = product.cart_variation.quantity || 1
-        const discount = product.discount || false
-        let discounted = false
-
-        if (discount) {
-          discounted = discount * qty
-        }
-
-        const total = price * qty
-
-        product.total = total
-        product.discounted = discounted
-
-        return product
-      })
-    },
-    prices () {
-      return this.cartProducts.map(product => product.price)
-    },
-    discounts () {
-      return this.cartProducts.map(product => product.discount)
-    },
-    subtotal () {
-      return this.prices.reduce((a, b) => this.isNum(a) + this.isNum(b), 0)
-    },
-    total () {
-      return this.discounts.reduce((a, b) => this.isNum(a) + this.isNum(b), 0)
-    },
-    discount () {
-      return this.isNum(this.subtotal) - this.isNum(this.total)
-    }
+    ...mapGetters('cart', [
+      'products',
+      'prices',
+      'discounts',
+      'subtotal',
+      'total',
+      'discount',
+      'updatedTotal'
+    ])
   },
   methods: {
     isNum (number) {
@@ -193,6 +175,14 @@ export default {
     },
     incrementQty (productId) {
       this.$store.commit('cart/increaseQuantity', productId)
+    },
+    setQuantity (count, product) {
+      this.$store.commit('cart/setQuantity', [product.id, count])
+
+      // // Make a reactive update to pricing
+      // Vue.set(product.cart_variation, 'quantity', count)
+      // Vue.set(this.products, this.products[product], product)
+      // this.updated = true
     }
   }
 }

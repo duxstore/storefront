@@ -6,6 +6,6 @@ export default class Collections extends Model {
   }
 
   primaryKey () {
-    return 'id'
+    return 'shortname'
   }
 }
